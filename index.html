@@ -12,6 +12,8 @@
 </head>
 <body>
 
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <!-- Navigation -->
   <header class="header header--hero" id="header">
     <nav class="nav container">
@@ -36,6 +38,12 @@
     <div class="hero__bg">
       <img src="https://etape-velo-gr37.fr/assets/saint-meen-terrasse-straight-Ylvzm7lh.png" alt="Terrasse ensoleillée de la maison à Saint-Méen-le-Grand" loading="eager">
       <div class="hero__overlay"></div>
+      <div class="hero__grain" aria-hidden="true"></div>
+    </div>
+    <div class="hero__orbs" aria-hidden="true">
+      <span class="hero__orb hero__orb--1"></span>
+      <span class="hero__orb hero__orb--2"></span>
+      <span class="hero__orb hero__orb--3"></span>
     </div>
     <div class="hero__content container">
       <p class="hero__tag label-mono">N°01 — Ancienne gare · GR37 · Bretagne</p>
@@ -63,12 +71,12 @@
   <!-- Le Quai -->
   <section class="section section--quai" id="quai">
     <div class="container">
-      <div class="split reveal">
-        <div class="split__media">
+      <div class="split">
+        <div class="split__media reveal reveal--left tilt-card">
           <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/0b0acbc1-4947-406e-8bf4-8895e961d7aa/saint-meen-exterieur.png" alt="Façade principale de la maison" loading="lazy">
           <span class="split__badge label-mono">Quai des Rêves — l'ancienne gare</span>
         </div>
-        <div class="split__content">
+        <div class="split__content reveal reveal--right">
           <p class="section__label label-mono">Le Quai</p>
           <h2 class="section__title">Une ancienne gare devenue halte,<br>posée sur le GR37 en Bretagne intérieure.</h2>
           <div class="prose">
@@ -90,7 +98,7 @@
         <p class="section__intro">Chacune se réserve séparément — idéal pour un voyageur seul, un couple, ou deux amis qui souhaitent leur propre espace. Draps et serviettes inclus.</p>
       </div>
       <div class="rooms">
-        <article class="room-card reveal">
+        <article class="room-card reveal tilt-card">
           <div class="room-card__img">
             <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/fbcd2c98-a463-4ba8-95d4-fb864b083f40/saint-meen-chambre.png" alt="Chambre 1 — lit double, ambiance douce" loading="lazy">
             <span class="room-card__price">50 € · la nuit</span>
@@ -100,7 +108,7 @@
             <p>Ambiance douce, lit double</p>
           </div>
         </article>
-        <article class="room-card reveal reveal--delay">
+        <article class="room-card reveal reveal--delay tilt-card">
           <div class="room-card__img">
             <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/a9a5a748-8830-4421-b2a8-1faafb39607b/saint-meen-chambre2.png" alt="Chambre 2 — lit en bois, esprit nature" loading="lazy">
             <span class="room-card__price">50 € · la nuit</span>
@@ -123,7 +131,7 @@
         <h2 class="section__title">La maison vous offre…</h2>
       </div>
       <div class="offres-grid">
-        <a href="#reserver" class="offre-card reveal">
+        <a href="#reserver" class="offre-card reveal tilt-card">
           <div class="offre-card__img">
             <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/2ad0f587-b2de-4bd7-ad3d-40000b9780be/saint-meen-terrasse.png" alt="Demande de réservation" loading="lazy">
           </div>
@@ -132,7 +140,7 @@
             <h3>Demande de réservation</h3>
           </div>
         </a>
-        <a href="#chambres" class="offre-card reveal reveal--delay">
+        <a href="#chambres" class="offre-card reveal reveal--delay tilt-card">
           <div class="offre-card__img">
             <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/a9a5a748-8830-4421-b2a8-1faafb39607b/saint-meen-chambre2.png" alt="La chambre" loading="lazy">
           </div>
@@ -141,7 +149,7 @@
             <h3>La chambre</h3>
           </div>
         </a>
-        <a href="#quai" class="offre-card reveal reveal--delay-2">
+        <a href="#quai" class="offre-card reveal reveal--delay-2 tilt-card">
           <div class="offre-card__img">
             <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/b7262fe7-ce52-4388-93f1-e06ac9b84d43/saint-meen-garage-solaire.png" alt="L'étape vélo" loading="lazy">
           </div>
@@ -157,8 +165,8 @@
   <!-- Destination -->
   <section class="section section--destination" id="destination">
     <div class="container">
-      <div class="destination reveal">
-        <div class="destination__content">
+      <div class="destination">
+        <div class="destination__content reveal reveal--left">
           <p class="section__label label-mono">Situer la maison</p>
           <h2 class="section__title">Entre Brocéliande et les plages de la côte d'Émeraude</h2>
           <div class="prose">
@@ -173,7 +181,7 @@
             <span class="tag">Voies vertes</span>
           </div>
         </div>
-        <div class="destination__map">
+        <div class="destination__map reveal reveal--right tilt-card">
           <iframe title="Carte — Saint-Méen-le-Grand" src="https://www.openstreetmap.org/export/embed.html?bbox=-2.22%2C48.18%2C-2.16%2C48.21&layer=mapnik&marker=48.195%2C-2.19" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
@@ -188,38 +196,38 @@
         <h2 class="section__title">Quelques images de la maison</h2>
       </div>
     </div>
-    <div class="gallery reveal">
-      <button class="gallery__item" data-index="0">
+    <div class="gallery reveal-stagger" id="gallery">
+      <button class="gallery__item reveal-scale" data-index="0">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/675d8cac-8370-4a0d-90f7-5e23a2caaaaf/saint-meen-jardin-arbre.png" alt="Jardin arboré autour de la maison" loading="lazy">
       </button>
-      <button class="gallery__item gallery__item--tall" data-index="1">
+      <button class="gallery__item gallery__item--tall reveal-scale" data-index="1">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/a441f441-5703-4f7d-ab40-7af5a46b71b6/saint-meen-jardin-fleurs.png" alt="Massif fleuri devant la maison" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="2">
+      <button class="gallery__item reveal-scale" data-index="2">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/b7262fe7-ce52-4388-93f1-e06ac9b84d43/saint-meen-garage-solaire.png" alt="Bâtiment annexe et garage de la propriété" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="3">
+      <button class="gallery__item reveal-scale" data-index="3">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/2ad0f587-b2de-4bd7-ad3d-40000b9780be/saint-meen-terrasse.png" alt="Terrasse extérieure devant la maison" loading="lazy">
       </button>
-      <button class="gallery__item gallery__item--wide" data-index="4">
+      <button class="gallery__item gallery__item--wide reveal-scale" data-index="4">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/fbcd2c98-a463-4ba8-95d4-fb864b083f40/saint-meen-chambre.png" alt="Chambre lumineuse pour une étape reposante" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="5">
+      <button class="gallery__item reveal-scale" data-index="5">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/1c9a4d51-f19a-4ca7-a824-a3a95fa172dc/saint-meen-commode.png" alt="Commode et miroir de la chambre" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="6">
+      <button class="gallery__item reveal-scale" data-index="6">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/074c4844-c232-4583-80a2-c5e1e2a5f9f5/saint-meen-salle-deau.png" alt="Salle d'eau lumineuse" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="7">
+      <button class="gallery__item reveal-scale" data-index="7">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/ba7c3a67-efc1-4e4d-9518-b060e4e0019c/saint-meen-douche.png" alt="Douche de la salle d'eau" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="8">
+      <button class="gallery__item reveal-scale" data-index="8">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/fd26d8e5-9b76-46bc-b9e4-8a13f4165824/saint-meen-cafe.png" alt="Coin café à disposition" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="9">
+      <button class="gallery__item reveal-scale" data-index="9">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/b58a4658-e988-4d93-b7fd-235d052c7ca5/saint-meen-jardin.png" alt="Cour et entrée fleurie" loading="lazy">
       </button>
-      <button class="gallery__item" data-index="10">
+      <button class="gallery__item reveal-scale" data-index="10">
         <img src="https://etape-velo-gr37.fr/__l5e/assets-v1/d89c5d96-79f3-4e75-99bc-6bfd46cb09ad/saint-meen-wc.png" alt="WC séparé" loading="lazy">
       </button>
     </div>
@@ -231,9 +239,11 @@
       <div class="section__header reveal">
         <p class="section__label label-mono">Avis Google</p>
         <h2 class="section__title">Ce que disent nos voyageurs</h2>
-        <div class="rating">
-          <div class="rating__stars">★★★★★</div>
-          <span class="rating__score">5,0 · 8 avis</span>
+        <div class="rating reveal">
+          <div class="rating__stars" aria-hidden="true">
+            <span class="rating__star">★</span><span class="rating__star">★</span><span class="rating__star">★</span><span class="rating__star">★</span><span class="rating__star">★</span>
+          </div>
+          <span class="rating__score"><span class="rating__number" data-count="5">5</span>,0 · 8 avis</span>
         </div>
       </div>
     </div>
@@ -331,12 +341,12 @@
           <p class="section__label label-mono">Réserver</p>
           <h2 class="section__title">Demandez votre nuitée</h2>
           <p class="reserver__desc">Réservation directe auprès de Marie‑Claire. Vous recevez une réponse personnelle, sans intermédiaire, généralement dans la journée.</p>
-          <div class="price-box">
+          <div class="price-box shimmer-border">
             <span class="price-box__label label-mono">À partir de</span>
             <div class="price-box__amount">50 €<span>/ nuit</span></div>
             <span class="price-box__detail">par chambre, 1 à 2 personnes</span>
           </div>
-          <ul class="check-list">
+          <ul class="check-list reveal reveal-stagger">
             <li>Draps & serviettes inclus</li>
             <li>Garage à vélo sécurisé</li>
             <li>Arrivée autonome dès 16h</li>
@@ -403,7 +413,7 @@
         <p class="section__label label-mono">Foire aux questions</p>
         <h2 class="section__title">Tout savoir avant votre étape</h2>
       </div>
-      <div class="faq reveal">
+      <div class="faq reveal-stagger">
         <details class="faq__item">
           <summary>Comment se passe l'arrivée à la maison ?</summary>
           <p>L'arrivée est autonome à partir de 16h grâce à une boîte à clés. Vous récupérez votre clé à votre rythme, idéal après une longue étape vélo ou randonnée.</p>
