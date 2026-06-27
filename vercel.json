@@ -49,12 +49,6 @@
     { "source": "/mentions-legales.html", "destination": "/mentions-legales", "permanent": true },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "quai-des-reves.vercel.app" }],
-      "destination": "https://etape-velo-gr37.fr/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
       "has": [{ "type": "host", "value": "www.etape-velo-gr37.fr" }],
       "destination": "https://etape-velo-gr37.fr/:path*",
       "permanent": true
