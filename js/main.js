@@ -7,6 +7,8 @@
   const navLinks = document.getElementById('navLinks');
   const scrollProgress = document.getElementById('scrollProgress');
   const reservationForm = document.getElementById('reservationForm');
+  const formStatus = document.getElementById('formStatus');
+  const reservationSubmit = document.getElementById('reservationSubmit');
   const reviewsInner = document.getElementById('reviewsInner');
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
@@ -15,13 +17,27 @@
   const lightboxNext = document.getElementById('lightboxNext');
   const gallery = document.getElementById('gallery');
 
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lightboxFocusables = lightbox
+    ? [lightboxClose, lightboxPrev, lightboxNext].filter(Boolean)
+    : [];
+
   let currentImageIndex = 0;
   let galleryImages = [];
+  let lightboxTrigger = null;
 
   const sections = [...document.querySelectorAll('section[id]')];
   const navAnchors = navLinks ? [...navLinks.querySelectorAll('a[href^="#"]')] : [];
 
   document.body.classList.add('is-loaded');
+
+  function setNavOpen(isOpen) {
+    if (!navToggle || !navLinks) return;
+    navToggle.classList.toggle('active', isOpen);
+    navLinks.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
 
   /* ---- Scroll progress ---- */
   function updateScrollProgress() {
@@ -56,7 +72,7 @@
   }
 
   function updateHeroParallax() {
-    if (!hero) return;
+    if (!hero || reducedMotion) return;
     const scrollY = window.scrollY;
     if (scrollY >= hero.offsetHeight) return;
     const img = hero.querySelector('.hero__bg img');
@@ -80,28 +96,21 @@
   /* ---- Mobile navigation ---- */
   if (navToggle && navLinks) {
     navToggle.addEventListener('click', () => {
-      navToggle.classList.toggle('active');
-      navLinks.classList.toggle('open');
-      document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+      setNavOpen(!navLinks.classList.contains('open'));
     });
 
     navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        navToggle.classList.remove('active');
-        navLinks.classList.remove('open');
-        document.body.style.overflow = '';
-      });
+      link.addEventListener('click', () => setNavOpen(false));
     });
   }
 
   /* ---- Scroll reveal (unified) ---- */
-  const animatedEls = document.querySelectorAll('.reveal, .reveal-scale, .reveal-stagger, .section__header, .rating');
+  const animatedEls = document.querySelectorAll('.reveal, .reveal-scale, .reveal-stagger, .section__header');
   const revealObserver = new IntersectionObserver(
     entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         entry.target.classList.add('visible');
-        if (entry.target.classList.contains('rating')) animateRating(entry.target);
         revealObserver.unobserve(entry.target);
       });
     },
@@ -129,42 +138,26 @@
     galleryObserver.observe(gallery);
   }
 
-  /* ---- Rating counter ---- */
-  function animateRating(el) {
-    const numEl = el.querySelector('.rating__number');
-    if (!numEl) return;
-    const target = parseInt(numEl.dataset.count, 10) || 5;
-    const duration = 800;
-    const start = performance.now();
+  /* ---- Card tilt effect ---- */
+  if (!reducedMotion) {
+    document.querySelectorAll('.tilt-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.classList.add('is-tilting');
+        card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
+      });
 
-    function tick(now) {
-      const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      numEl.textContent = Math.round(eased * target);
-      if (t < 1) requestAnimationFrame(tick);
-    }
-
-    requestAnimationFrame(tick);
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-tilting');
+        card.style.transform = '';
+      });
+    });
   }
 
-  /* ---- Card tilt effect ---- */
-  document.querySelectorAll('.tilt-card').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const rect = card.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      card.classList.add('is-tilting');
-      card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
-    });
-
-    card.addEventListener('mouseleave', () => {
-      card.classList.remove('is-tilting');
-      card.style.transform = '';
-    });
-  });
-
   /* ---- Reviews infinite scroll ---- */
-  if (reviewsInner) {
+  if (reviewsInner && !reducedMotion) {
     reviewsInner.innerHTML = reviewsInner.innerHTML + reviewsInner.innerHTML;
   }
 
@@ -179,22 +172,47 @@
   });
 
   galleryItems.forEach((item, index) => {
-    item.addEventListener('click', () => openLightbox(index));
+    const alt = galleryImages[index]?.alt;
+    if (alt) item.setAttribute('aria-label', `Agrandir : ${alt}`);
+    item.addEventListener('click', () => openLightbox(index, item));
   });
 
-  function openLightbox(index) {
+  function trapLightboxFocus(e) {
+    if (!lightbox.classList.contains('active') || e.key !== 'Tab') return;
+    const focusable = lightboxFocusables;
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  function openLightbox(index, trigger) {
     currentImageIndex = index;
+    lightboxTrigger = trigger || document.activeElement;
     lightboxImg.src = galleryImages[index].src;
     lightboxImg.alt = galleryImages[index].alt;
     lightbox.classList.add('active');
     lightbox.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    lightboxClose.focus();
+    document.addEventListener('keydown', trapLightboxFocus);
   }
 
   function closeLightbox() {
     lightbox.classList.remove('active');
     lightbox.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    document.removeEventListener('keydown', trapLightboxFocus);
+    if (lightboxTrigger && typeof lightboxTrigger.focus === 'function') {
+      lightboxTrigger.focus();
+    }
   }
 
   function navigateLightbox(direction) {
@@ -225,27 +243,111 @@
   lightboxImg.style.transition = 'opacity 0.2s ease';
 
   /* ---- Reservation form ---- */
-  if (reservationForm) {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('arrivee').min = today;
-    document.getElementById('depart').min = today;
+  function showFormStatus(message, type) {
+    if (!formStatus) return;
+    formStatus.textContent = message;
+    formStatus.hidden = false;
+    formStatus.classList.remove('form-status--success', 'form-status--error');
+    formStatus.classList.add(type === 'success' ? 'form-status--success' : 'form-status--error');
+  }
 
-    document.getElementById('arrivee').addEventListener('change', function () {
-      document.getElementById('depart').min = this.value;
+  function clearFormStatus() {
+    if (!formStatus) return;
+    formStatus.hidden = true;
+    formStatus.textContent = '';
+    formStatus.classList.remove('form-status--success', 'form-status--error');
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function buildReservationBody(fields) {
+    const { nom, email, telephone, arrivee, depart, chambreLabel, personnes, petitdej, message } = fields;
+    return [
+      'Bonjour Marie-Claire,',
+      '',
+      'Je souhaiterais réserver une nuitée au Quai des Rêves.',
+      '',
+      `Nom : ${nom}`,
+      `Email : ${email}`,
+      telephone ? `Téléphone : ${telephone}` : '',
+      `Arrivée : ${formatDate(arrivee)}`,
+      `Départ : ${formatDate(depart)}`,
+      `Chambre : ${chambreLabel}`,
+      `Personnes : ${personnes}`,
+      petitdej ? 'Petit-déjeuner : Oui (7,50 € / personne)' : 'Petit-déjeuner : Non',
+      message ? `\nMessage :\n${message}` : '',
+      '',
+      'Merci et à bientôt !'
+    ].filter(Boolean).join('\n');
+  }
+
+  function sendViaMailto(fields) {
+    const body = buildReservationBody(fields);
+    const subject = encodeURIComponent(`Réservation — ${fields.nom} — ${formatDate(fields.arrivee)}`);
+    window.location.href = `mailto:marieclairepaul57@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+  }
+
+  async function sendViaFormSubmit(fields) {
+    const body = buildReservationBody(fields);
+    const response = await fetch('https://formsubmit.co/ajax/marieclairepaul57@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        name: fields.nom,
+        email: fields.email,
+        phone: fields.telephone || 'Non renseigné',
+        _subject: `Réservation — ${fields.nom} — ${formatDate(fields.arrivee)}`,
+        message: body,
+        _template: 'table',
+        _captcha: 'false'
+      })
     });
 
-    reservationForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+    if (!response.ok) throw new Error('FormSubmit error');
+    const data = await response.json();
+    if (data.success !== 'true' && data.success !== true) throw new Error('FormSubmit rejected');
+  }
 
-      const nom = document.getElementById('nom').value;
-      const email = document.getElementById('email').value;
-      const telephone = document.getElementById('telephone').value;
-      const arrivee = document.getElementById('arrivee').value;
-      const depart = document.getElementById('depart').value;
+  if (reservationForm) {
+    const arriveeInput = document.getElementById('arrivee');
+    const departInput = document.getElementById('depart');
+    const today = new Date().toISOString().split('T')[0];
+    arriveeInput.min = today;
+    departInput.min = today;
+
+    arriveeInput.addEventListener('change', function () {
+      departInput.min = this.value;
+      if (departInput.value && departInput.value <= this.value) {
+        departInput.value = '';
+      }
+    });
+
+    reservationForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearFormStatus();
+
+      const nom = document.getElementById('nom').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const telephone = document.getElementById('telephone').value.trim();
+      const arrivee = arriveeInput.value;
+      const depart = departInput.value;
       const chambre = document.getElementById('chambre');
       const personnes = document.getElementById('personnes').value;
       const petitdej = document.getElementById('petitdej').checked;
-      const message = document.getElementById('message').value;
+      const message = document.getElementById('message').value.trim();
+
+      if (depart <= arrivee) {
+        showFormStatus('La date de départ doit être postérieure à la date d\'arrivée.', 'error');
+        departInput.focus();
+        return;
+      }
 
       const chambreMap = {
         indifferent: 'Indifférent',
@@ -253,33 +355,39 @@
         chambre2: 'Chambre 2 — 50 €'
       };
 
-      const body = [
-        'Bonjour Marie-Claire,',
-        '',
-        'Je souhaiterais réserver une nuitée au Quai des Rêves.',
-        '',
-        `Nom : ${nom}`,
-        `Email : ${email}`,
-        telephone ? `Téléphone : ${telephone}` : '',
-        `Arrivée : ${formatDate(arrivee)}`,
-        `Départ : ${formatDate(depart)}`,
-        `Chambre : ${chambreMap[chambre.value] || chambre.options[chambre.selectedIndex].text}`,
-        `Personnes : ${personnes}`,
-        petitdej ? 'Petit-déjeuner : Oui (7,50 € / personne)' : 'Petit-déjeuner : Non',
-        message ? `\nMessage :\n${message}` : '',
-        '',
-        'Merci et à bientôt !'
-      ].filter(Boolean).join('\n');
+      const fields = {
+        nom,
+        email,
+        telephone,
+        arrivee,
+        depart,
+        chambreLabel: chambreMap[chambre.value] || chambre.options[chambre.selectedIndex].text,
+        personnes,
+        petitdej,
+        message
+      };
 
-      const subject = encodeURIComponent(`Réservation — ${nom} — ${formatDate(arrivee)}`);
-      window.location.href = `mailto:marieclairepaul57@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+      if (reservationSubmit) {
+        reservationSubmit.disabled = true;
+        reservationSubmit.textContent = 'Envoi en cours…';
+      }
+
+      try {
+        await sendViaFormSubmit(fields);
+        showFormStatus('Demande envoyée ! Marie‑Claire vous répondra rapidement par email ou téléphone.', 'success');
+        reservationForm.reset();
+        arriveeInput.min = today;
+        departInput.min = today;
+      } catch {
+        showFormStatus('Envoi automatique indisponible — ouverture de votre messagerie…', 'error');
+        sendViaMailto(fields);
+      } finally {
+        if (reservationSubmit) {
+          reservationSubmit.disabled = false;
+          reservationSubmit.textContent = 'Envoyer la demande';
+        }
+      }
     });
-  }
-
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
   }
 
   /* ---- FAQ: one open at a time ---- */
@@ -294,17 +402,19 @@
   });
 
   /* ---- Subtle magnetic buttons ---- */
-  document.querySelectorAll('.btn').forEach(btn => {
-    btn.addEventListener('mousemove', e => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      btn.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`;
+  if (!reducedMotion) {
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
     });
-    btn.addEventListener('mouseleave', () => {
-      btn.style.transform = '';
-    });
-  });
+  }
 
   onScroll();
 

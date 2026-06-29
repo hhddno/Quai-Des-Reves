@@ -79,13 +79,6 @@
           "latitude": 48.1878,
           "longitude": -2.1833
         },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "5",
-          "bestRating": "5",
-          "ratingCount": "8",
-          "reviewCount": "8"
-        },
         "amenityFeature": [
           { "@type": "LocationFeatureSpecification", "name": "Garage à vélo sécurisé", "value": true },
           { "@type": "LocationFeatureSpecification", "name": "Jardin", "value": true },
@@ -162,13 +155,15 @@
 </head>
 <body>
 
+  <a href="#hero" class="skip-link">Aller au contenu principal</a>
+
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <!-- Navigation -->
   <header class="header header--hero" id="header">
-    <nav class="nav container">
-      <a href="#" class="nav__logo">Quai des Rêves</a>
-      <button class="nav__toggle" id="navToggle" aria-label="Menu">
+    <nav class="nav container" aria-label="Navigation principale">
+      <a href="/" class="nav__logo">Quai des Rêves</a>
+      <button class="nav__toggle" id="navToggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
       <ul class="nav__links" id="navLinks">
@@ -292,11 +287,11 @@
         </a>
         <a href="#chambres" class="offre-card reveal reveal--delay tilt-card">
           <div class="offre-card__img">
-            <picture><source srcset="images/chambre2.webp" type="image/webp"><img src="images/chambre2.png" alt="La chambre" loading="lazy"></picture>
+            <picture><source srcset="images/chambre2.webp" type="image/webp"><img src="images/chambre2.png" alt="Les chambres" loading="lazy"></picture>
           </div>
           <div class="offre-card__overlay">
             <span class="label-mono">Se reposer</span>
-            <h3>La chambre</h3>
+            <h3>Les chambres</h3>
           </div>
         </a>
         <a href="#quai" class="offre-card reveal reveal--delay-2 tilt-card">
@@ -384,18 +379,16 @@
     </div>
   </section>
 
-  <!-- Avis -->
+  <!-- Témoignages -->
   <section class="section section--avis" id="avis">
     <div class="container">
       <div class="section__header reveal">
-        <p class="section__label label-mono">Avis Google</p>
+        <p class="section__label label-mono">Témoignages</p>
         <h2 class="section__title">Ce que disent nos voyageurs</h2>
-        <div class="rating reveal">
-          <div class="rating__stars" aria-hidden="true">
-            <span class="rating__star">★</span><span class="rating__star">★</span><span class="rating__star">★</span><span class="rating__star">★</span><span class="rating__star">★</span>
-          </div>
-          <span class="rating__score"><span class="rating__number" data-count="5">5</span>,0 · 8 avis</span>
-        </div>
+        <p class="section__intro reviews__intro reveal">Retours de cyclistes, randonneurs et voyageurs ayant séjourné au Quai des Rêves.</p>
+        <p class="reviews__google reveal">
+          <a href="https://www.google.com/maps/search/?api=1&amp;query=Quai+des+R%C3%AAves+Place+de+la+Gare+Saint-M%C3%A9en-le-Grand" class="btn btn--earth btn--sm" target="_blank" rel="noopener noreferrer">Voir sur Google Maps</a>
+        </p>
       </div>
     </div>
     <div class="reviews-track" id="reviewsTrack">
@@ -550,8 +543,9 @@
             <label for="message">Message (optionnel)</label>
             <textarea id="message" name="message" rows="3" placeholder="Vélo, randonnée, heure d'arrivée…"></textarea>
           </div>
-          <button type="submit" class="btn btn--primary btn--lg btn--full">Envoyer la demande</button>
-          <p class="form-hint">Votre messagerie s'ouvre avec un email pré‑rempli à destination de Marie‑Claire.</p>
+          <button type="submit" class="btn btn--primary btn--lg btn--full" id="reservationSubmit">Envoyer la demande</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite" hidden></p>
+          <p class="form-hint">Votre demande est envoyée par email à Marie‑Claire. Vous recevez une confirmation à l'écran — aucune messagerie requise sur mobile.</p>
         </form>
       </div>
     </div>
@@ -632,10 +626,11 @@
   </footer>
 
   <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <button class="lightbox__close" id="lightboxClose" aria-label="Fermer">&times;</button>
-    <button class="lightbox__prev" id="lightboxPrev" aria-label="Précédent">‹</button>
-    <button class="lightbox__next" id="lightboxNext" aria-label="Suivant">›</button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle" aria-hidden="true">
+    <p class="visually-hidden" id="lightboxTitle">Image agrandie de la galerie</p>
+    <button class="lightbox__close" id="lightboxClose" type="button" aria-label="Fermer">&times;</button>
+    <button class="lightbox__prev" id="lightboxPrev" type="button" aria-label="Précédent">‹</button>
+    <button class="lightbox__next" id="lightboxNext" type="button" aria-label="Suivant">›</button>
     <img src="" alt="" id="lightboxImg">
   </div>
 
